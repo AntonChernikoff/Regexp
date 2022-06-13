@@ -2,7 +2,6 @@ import re
 from pprint import pprint
 import csv
 
-
 def read_csv():
     with open("phonebook_raw.csv") as f:
         rows = csv.reader(f, delimiter=",")
@@ -35,21 +34,24 @@ def edit_phone(str_phone):
     # print(str_phone)
     return str_phone
 
+def search_in_list(contacts_list_new, phone):
+    i = 0
+    while i < len(contacts_list_new):
+        res_list_1 = list(filter(lambda x: phone[0] in x, contacts_list_new[i])) # Фамилия
+        res_list_2 = list(filter(lambda x: phone[1] in x, contacts_list_new[i])) # Имя
+        if len(res_list_1) > 0 and len(res_list_2) > 0:
+            return [i]
+        i += 1
+    return []
+
 def duplicates_search(contacts_list):
     contacts_list_new = []
     for phone in contacts_list:
-        i = 0
-        find_index = 0
-        while i < len(contacts_list_new):
-            retrieved_elements = list(filter(lambda x: phone[0] in x, contacts_list_new[i]))
-            # print(retrieved_elements)
-            if len(retrieved_elements) > 0:
-                find_index = 1
-                break
-            i += 1
-        if find_index == 0:
+        find_index = search_in_list(contacts_list_new, phone)
+        if len(find_index) == 0:
             contacts_list_new.append(phone)
         else:
+            i = find_index[0]
             j = 0
             for contact in contacts_list_new[i]:
                 if contact == "":
