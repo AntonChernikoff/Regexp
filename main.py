@@ -1,6 +1,21 @@
 import re
 from pprint import pprint
 import csv
+import datetime
+
+def file_log_decorator(file_log = 'function_errors.log'):
+    def log_function(old_func):
+        def new_func(*args, **kwargs):
+            text = f"{datetime.datetime.now()} функция {old_func.__name__}{args}{kwargs}"
+            something = old_func(*args, **kwargs)
+            text = f"{text} return {something}\n"
+            # print(f"{text} return {something}")
+            with open(file_log, 'a', encoding='utf8') as file:
+                file.write(text)
+            return something
+        return new_func
+    return log_function
+
 
 def read_csv():
     with open("phonebook_raw.csv") as f:
@@ -26,6 +41,7 @@ def edit_fio(str_list): # Обработка ФИО
             j += 1
     return str_list
 
+@file_log_decorator(file_log = 'edit_phone.log')
 def edit_phone(str_phone):
     pattern = r"(\+7|8)\s?\(?(\d{3})\)?\s?\-?(\d{3})\s?\-?(\d{2})\s?\-?(\d{2})"
     str_phone = re.sub(pattern, r"+7(\2)\3-\4-\5", str_phone)
